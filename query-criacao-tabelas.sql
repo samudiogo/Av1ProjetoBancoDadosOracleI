@@ -1,0 +1,136 @@
+CREATE
+  TABLE IMAGEM
+  (
+    id              NUMBER(10),
+    url_imagem      VARCHAR(1024),
+    legenda         VARCHAR(1024),
+    cod_dpge_imagem NUMBER(10),
+    CONSTRAINT PK_IMAGEM PRIMARY KEY (id)
+        
+  );
+CREATE UNIQUE INDEX INDEX_PK_IMAGEM ON IMAGEM
+  (
+    id
+  )
+  ;
+  CREATE
+    TABLE PAGINA
+    (
+      id            NUMBER(10),
+      titulo        VARCHAR2(150),
+      alias         VARCHAR2(150),
+      data_cadastro TIMESTAMP(3) NOT NULL,
+      conteudo_html VARCHAR(10000) NOT NULL,
+      CONSTRAINT PK_PAGINA PRIMARY KEY (id)
+    );
+CREATE UNIQUE INDEX INDEX_PK_PAGINA ON PAGINA
+  (
+    id
+  )
+  ;
+  CREATE
+    TABLE SECAO_CONTEUDO
+    (
+      id NUMBER(10) NOT NULL,
+      nome NVARCHAR2(200),
+      descricao VARCHAR2(250) NOT NULL,
+      CONSTRAINT PK_SECAO_CONTEUDO PRIMARY KEY (id)
+    );
+CREATE UNIQUE INDEX INDEX_PK_SECAO_CONTEUDO ON SECAO_CONTEUDO
+  (
+    id
+  )
+  ;
+  CREATE
+    TABLE TIPO_BANNER
+    (
+      id        NUMBER(10),
+      nome      VARCHAR2(100),
+      altura    NUMBER(10),
+      largura   NUMBER(10),
+      descricao VARCHAR(250) NOT NULL,
+      CONSTRAINT PK_TIPO_BANNER PRIMARY KEY (id)
+    );
+CREATE UNIQUE INDEX INDEX_PK_TIPO_BANNER ON TIPO_BANNER
+  (
+    id
+  )
+  ;
+  CREATE
+    TABLE TIPO_CONTEUDO
+    (
+      id NUMBER(10),
+      nome NVARCHAR2(50) NOT NULL,
+      descricao VARCHAR2(250),
+      CONSTRAINT PK_TIPO_CONTEUDO PRIMARY KEY (id)
+    );
+CREATE UNIQUE INDEX INDEX_PK_TIPO_CONTEUDO ON TIPO_CONTEUDO
+  (
+    id
+  )
+  ;
+  CREATE
+    TABLE BANNER
+    (
+      id             NUMBER(10),
+      titulo         VARCHAR2(150),
+      data_cadastro  TIMESTAMP(3) NOT NULL,
+      url            VARCHAR2(150),
+      data_inicio    DATE,
+      data_fim       DATE,
+      obs            VARCHAR(250),
+      flag_fixado    NUMBER(1) NOT NULL,
+      id_IMAGEM      NUMBER(10),
+      id_TIPO_BANNER NUMBER(10) NOT NULL,
+      CONSTRAINT PK_BANNER PRIMARY KEY (id),
+      CONSTRAINT FK_BANNER_PK_IMAGEM FOREIGN KEY (id_IMAGEM)
+      REFERENCES IMAGEM (id) ON DELETE SET NULL,
+      CONSTRAINT FK_BANNER_PK_TIPO_BANNER FOREIGN KEY (id_TIPO_BANNER)
+      REFERENCES TIPO_BANNER (id)
+      ON DELETE CASCADE
+    );
+CREATE UNIQUE INDEX INDEX_PK_BANNER ON BANNER
+  (
+    id
+  )
+  ;
+
+  CREATE
+    TABLE CONTEUDO
+    (
+      id_PAGINA         NUMBER(10),
+      id_SECAO_CONTEUDO NUMBER(10),
+      id_TIPO_CONTEUDO  NUMBER(10),
+      CONSTRAINT PK_CONTEUDO PRIMARY KEY (id_PAGINA),
+      CONSTRAINT FK_CONTEUDO_PK_PAGINA FOREIGN KEY (id_PAGINA) REFERENCES
+      PAGINA (id),
+      CONSTRAINT FK_CONTEUDO_PK_SECAO FOREIGN KEY (id_SECAO_CONTEUDO)
+      REFERENCES SECAO_CONTEUDO (id),
+      CONSTRAINT FK_CONTEUDO_PK_TIPO_CONTEUDO FOREIGN KEY (id_TIPO_CONTEUDO)
+      REFERENCES TIPO_CONTEUDO (id)
+    );
+CREATE UNIQUE INDEX INDEX_PK_CONTEUDO ON CONTEUDO
+  (
+    id_PAGINA
+  )
+  ;
+  CREATE
+    TABLE NOTICIA
+    (
+      id_PAGINA       NUMBER(10),
+      resumo          VARCHAR(250) NOT NULL,
+      flag_destaque   NUMBER(1) NOT NULL,
+      data_publicacao TIMESTAMP(3),
+      flag_restrito   NUMBER(1) NOT NULL,
+      id_IMAGEM       NUMBER(10) NOT NULL,
+      CONSTRAINT PK_NOTICIA PRIMARY KEY (id_PAGINA),
+      CONSTRAINT FK_NOTICIA_PK_PAGINA FOREIGN KEY (id_PAGINA) REFERENCES PAGINA
+      (id),
+      CONSTRAINT FK_NOTICIA_PK_IMAGEM FOREIGN KEY (id_IMAGEM) REFERENCES IMAGEM
+      (id),
+      CONSTRAINT CHECK_IMAGEM_MAIOR_QUE_0 CHECK (id_IMAGEM > 0)
+    );
+CREATE UNIQUE INDEX INDEX_PK_NOTICIA ON NOTICIA
+  (
+    id_PAGINA
+  );
